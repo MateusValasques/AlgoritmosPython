@@ -1,2 +1,2 @@
 # Algoritmos Python
-#Algoritmos feitos para prática e exercício
+# Algoritmos feitos para prática e exercício
