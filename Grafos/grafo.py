@@ -8,9 +8,9 @@ class Graph:
     def __init__(self):
         self.vertList = {}
 
-    def addVertex(self, key):
-        vertice = Vertex(key)
-        self.vertList[key] = vertice
+    def addVertex(self, id, lat, lon):
+        vertice = Vertex(id, lat, lon)
+        self.vertList[id] = vertice
 
     def getVertex(self, key):
        return self.vertList[key] 
@@ -26,9 +26,8 @@ class Graph:
         self.getVertex(self, f).addVizinho(self, t, cost)
 
     #def getEdges(self):
+    
     def getVertices(self):
-        
-   
         
     #def bfs(self, start):
 
@@ -37,4 +36,4 @@ class Graph:
     #def dijkstra(self, start, maxD=1e309):
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
