@@ -9,6 +9,8 @@ from queue import Queue
 from collections import defaultdict
 from vertex import Vertex
 
+from Grafos.plot_pontos_silas import onclick
+
 
 class Graph:
     def __init__(self):
@@ -59,19 +61,58 @@ class Graph:
             for line in fp:
                 nos = line.split(" ")
                 no_atual = nos[0]
+
                 for i in nos:
-                    self.addEdge(no_atual, nos[i], self.haversine(no_atual["lat"], no_atual["lon"], i["lat"], i["lon"]))
+                    print(self.haversine(no_atual["lat"], no_atual["lon"], i["lat"], i["lon"]))
+                    self.addEdge(no_atual, nos[i], self.haversine(no_atual["lat"], no_atual["lon"], i["lat"], i["lon"]))#pode dar merda pq nao sei como tirar o /n
 
 
     #def busca_largura(self):
 
-    #def busca_profundidade(self):
+    def busca_profundidade(self, vertice, visitados):
+        visitados.add(vertice)
+        for vizinho in self[vertice]:
+            if vizinho not in visitados:
+                self.busca_profundidade(self, vizinho, visitados)
 
-    def djikstra(self):
+    def djikstra(self, origem,fim):
+
+            controle = {}
+            distanciaAtual = {}
+            noAtual = {}
+            naoVisitados = []
+            atual = origem
+            noAtual[atual] = 0
+
+            for vertice in self.keys():
+                naoVisitados.append(vertice)
+                distanciaAtual[vertice] = float('inf')
+
+            distanciaAtual[atual] = [0, origem]
+
+            naoVisitados.remove(atual)
+
+            while naoVisitados:
+                for vizinho, peso in self[atual].items():
+                    pesoCalc = peso + noAtual[atual]
+                    if distanciaAtual[vizinho] == float("inf") or distanciaAtual[vizinho][0] > pesoCalc:
+                        distanciaAtual[vizinho] = [pesoCalc, atual]
+                        controle[vizinho] = pesoCalc
+
+                if controle == {}: break
+                minVizinho = min(controle.items(), key=lambda x: x[1])
+                atual = minVizinho[0]
+                noAtual[atual] = minVizinho[1]
+                naoVisitados.remove(atual)
+                del controle[atual]
+
+            return distanciaAtual[fim][0]
 
     def main(self):
 
-        self.createAllVertex(self)
+        self.createAllVertex()
+        self.createAllEdges()
+
         file_name = "map.osm.txt"
         x = list()
         y = list()
@@ -80,7 +121,7 @@ class Graph:
                 points = re.findall(r'[-+]?\d+.\d+', line)
                 x.append(float(points[1]))
                 y.append(float(points[2]))
-        print(points)
+        #print(points)
         plt.plot(x, y, 'ro')
 
         fig, ax = plt.subplots()
@@ -101,6 +142,8 @@ class Graph:
 
     def onclick(self, event):
         x1, y1 = (event.xdata, event.ydata)
+
+        #a magia tem que acontecer aqui
         print(x1, y1)
 
     if __name__ == "__main__":
