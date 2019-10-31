@@ -1,4 +1,8 @@
 import math
+import matplotlib.pyplot as plt #adiciona os pontos para formar o grafico#
+from matplotlib.widgets import Cursor, Button #importa as funcoes do cursor do mouse
+import sys
+import re
 import matplotlib.pyplot as plt
 from matplotlib.widgets import Cursor, Button
 import sys
@@ -9,12 +13,16 @@ from queue import Queue
 from collections import defaultdict
 from vertex import Vertex
 
-from Grafos.plot_pontos_silas import onclick
+#from Grafos.plot_pontos_silas import onclick
 
 
 class Graph:
+
     def __init__(self):
         self.vertList = {}
+        self.c1 = None
+        self.c2 = None
+        self.flip = True
 
     def addVertex(self, id, lat, lon):
         vertice = Vertex(id, lat, lon)
@@ -25,15 +33,9 @@ class Graph:
 
     def addEdge(self, f, t, cost=0):
 
-        if not f in self.vertList:
-            self.addVertex(self, f)
+        self.getVertex(f).addVizinho(t, cost)
 
-        if not t in self.vertList:
-            self.addVertex(self, t) 
-
-        self.getVertex(self, f).addVizinho(self, t, cost)
-
-    def haversine(lat1, lon1, lat2, lon2):
+    def haversine(self, lat1, lon1, lat2, lon2):
 
         # distance between latitudes
         # and longitudes
@@ -51,20 +53,21 @@ class Graph:
         return rad * c
 
     def createAllVertex (self):
-        with open("map.osm.txt") as fp:
+        with open("arquivo_teste") as fp:
             for line in fp:
                 nos = line.split(" ")
                 self.addVertex(nos[0], nos[1], nos[2])
 
     def createAllEdges (self):
-        with open("uesb.adjlist.txt") as fp:
+        with open("arquivoadjlist") as fp:
             for line in fp:
+                line = line.replace("\n", "")
                 nos = line.split(" ")
                 no_atual = nos[0]
 
-                for i in nos:
-                    print(self.haversine(no_atual["lat"], no_atual["lon"], i["lat"], i["lon"]))
-                    self.addEdge(no_atual, nos[i], self.haversine(no_atual["lat"], no_atual["lon"], i["lat"], i["lon"]))#pode dar merda pq nao sei como tirar o /n
+                for i in range(1, len(nos)):
+
+                    self.addEdge(no_atual, nos[i], self.haversine(float(self.getVertex(no_atual).lat), float(self.getVertex(no_atual).lon), float(self.getVertex(nos[i]).lat), float(self.getVertex(nos[i]).lon)))
 
 
     #def busca_largura(self):
@@ -112,7 +115,7 @@ class Graph:
 
         self.createAllVertex()
         self.createAllEdges()
-
+        #Criar o grafico
         file_name = "map.osm.txt"
         x = list()
         y = list()
@@ -122,7 +125,7 @@ class Graph:
                 x.append(float(points[1]))
                 y.append(float(points[2]))
         #print(points)
-        plt.plot(x, y, 'ro')
+        #plt.plot(x, y, 'ro')
 
         fig, ax = plt.subplots()
 
@@ -136,17 +139,24 @@ class Graph:
 
 
 
-        fig.canvas.mpl_connect('button_press_event', onclick)
-
+        c1 = fig.canvas.mpl_connect('button_press_event', self.onclick)
+        print(c1)
         plt.show()
 
     def onclick(self, event):
-        x1, y1 = (event.xdata, event.ydata)
+        if self.flip:
+            self.c1 = (event.xdata, event.ydata)
+        else:
+            self.c2 = (event.xdata, event.ydata)
+        self.flip = not self.flip
+        #x1, y1 = (event.xdata, event.ydata)
 
         #a magia tem que acontecer aqui
-        print(x1, y1)
+        print (self.c1, self.c2)
 
-    if __name__ == "__main__":
-        main()
+
+if __name__ == "__main__":
+    g = Graph()
+    g.main()
 
 
