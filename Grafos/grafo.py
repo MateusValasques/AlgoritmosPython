@@ -24,19 +24,24 @@ class Graph:
         self.c2 = None
         self.flip = True
 
-    def addVertex(self, id, lat, lon):
+    def addVertex(self, numerador, id, lat, lon):
         vertice = Vertex(id, lat, lon)
-        self.vertList[id] = vertice
+        self.vertList[numerador] = vertice
 
     def getVertex(self, key):
-       return self.vertList[key] 
+        for i in range(len(self.vertList)):
+            self.vertList[i].id = key
+            return self.vertList[i]
 
     def addEdge(self, f, t, cost=0):
 
         self.getVertex(f).addVizinho(t, cost)
 
     def haversine(self, lat1, lon1, lat2, lon2):
-
+        lat1 = float(lat1)
+        lon1 = float(lon1)
+        lat2 = float(lat2)
+        lon2 = float(lon2)
         # distance between latitudes
         # and longitudes
         dLat = (lat2 - lat1) * math.pi / 180.0
@@ -53,13 +58,17 @@ class Graph:
         return rad * c
 
     def createAllVertex (self):
-        with open("arquivo_teste") as fp:
+        with open("map.osm.txt") as fp:
+            cont = 0
             for line in fp:
+
+                line = line.replace("\n", "")
                 nos = line.split(" ")
-                self.addVertex(nos[0], nos[1], nos[2])
+                self.addVertex(cont, nos[0], nos[1], nos[2])
+                cont += 1
 
     def createAllEdges (self):
-        with open("arquivoadjlist") as fp:
+        with open("uesb.adjlist") as fp:
             for line in fp:
                 line = line.replace("\n", "")
                 nos = line.split(" ")
@@ -110,6 +119,15 @@ class Graph:
                 del controle[atual]
 
             return distanciaAtual[fim][0]
+    def ponto_proximo (self, lat, lon):
+        menor = 10000000000000000000
+
+        for i in range(len(self.vertList)):
+            teste = self.vertList[i].lat
+            if self.haversine(lat, lon, self.vertList[i].lat, self.vertList[i].lon) < menor:
+                menor = self.haversine(lat, lon, self.vertList[i].lat, self.vertList[i].lon)
+                mais_proximo = self.vertList[i]
+        return mais_proximo
 
     def main(self):
 
@@ -140,7 +158,6 @@ class Graph:
 
 
         c1 = fig.canvas.mpl_connect('button_press_event', self.onclick)
-        print(c1)
         plt.show()
 
     def onclick(self, event):
@@ -149,10 +166,21 @@ class Graph:
         else:
             self.c2 = (event.xdata, event.ydata)
         self.flip = not self.flip
+
+
         #x1, y1 = (event.xdata, event.ydata)
 
         #a magia tem que acontecer aqui
-        print (self.c1, self.c2)
+        if self.c1 != None and self.c2 != None:
+            latitude1, longitude1 = self.c1
+            latitude2, longitude2 = self.c2
+
+            origem = self.ponto_proximo(latitude1, longitude1)
+            fim = self.ponto_proximo(latitude2, longitude2)
+
+            self.djikstra(origem, fim)
+        #a partir daqui eu tenho que mandar isso para a função que vai desenhar a linha
+
 
 
 if __name__ == "__main__":

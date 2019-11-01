@@ -149,7 +149,7 @@ vet6 = array('i', [])
 
 for i in range (10):
     for i in range(5):
-        vet1.append()
+        vet1.append(i)
     for i in range(5):
         vet1.append(random.randrange(10))
 
@@ -197,7 +197,7 @@ print("TEMPO PARA O MERGE SORT DO VETOR 1 É", fim)
 
 for i in range (100):
     for i in range(5):
-        vet2.append()
+        vet2.append(i)
     for i in range(5):
         vet2.append(random.randrange(10))
 
@@ -245,7 +245,7 @@ print("TEMPO PARA O MERGE SORT DO VETOR 2 É", fim)
 
 for i in range (1000):
     for i in range(5):
-        vet3.append()
+        vet3.append(i)
     for i in range(5):
         vet3.append(random.randrange(10))
 
@@ -293,7 +293,7 @@ print("TEMPO PARA O MERGE SORT DO VETOR 3 É", fim)
 
 for i in range (10000):
     for i in range(5):
-        vet4.append()
+        vet4.append(i)
     for i in range(5):
         vet4.append(random.randrange(10))
 
@@ -341,7 +341,7 @@ print("TEMPO PARA O MERGE SORT DO VETOR 4 É", fim)
 
 for i in range (100000):
     for i in range(5):
-        vet5.append()
+        vet5.append(i)
     for i in range(5):
         vet5.append(random.randrange(10))
 
@@ -389,7 +389,7 @@ print("TEMPO PARA O MERGE SORT DO VETOR 5 É", fim)
 
 for i in range (1000000):
     for i in range(5):
-        vet6.append()
+        vet6.append(i)
     for i in range(5):
         vet6.append(random.randrange(10))
 
